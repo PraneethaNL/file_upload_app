@@ -22,9 +22,6 @@ const handleFileChange = (e) => {
   setFile(file);
 };
 
-
-
-
   // Function to upload file to s3
   const uploadFile = async () => {
     // S3 Bucket Name
@@ -59,52 +56,33 @@ const handleFileChange = (e) => {
       try {
           const response = await s3Client.send(command);
           console.log(response);
+          alert("File uploaded successfully.");
       } catch (err) {
           console.error(err);
+          alert("Failed to upload file.");
       }
 
-    // await s3.putObject(params).promise().then((err, data) => {
-    //     console.log(err);
-    //     // Fille successfully uploaded
-    //     alert("File uploaded successfully.");
-    //   });
+    //insert into dynamo via lambda
+    const API_PATH='https://3amtuwjax4.execute-api.us-west-1.amazonaws.com/default'
+    const dynamoDbData = {
+      id: nanoid(),
+      input_text: inputText,
+      input_file_path: `${S3_BUCKET}/${file.name}`,
+    };
 
-    // var upload = s3
-    // .putObject(params)
-    // .on("httpUploadProgress", (evt) => {
-    //   // File uploading progress
-    //   console.log(
-    //     "Uploading " + parseInt((evt.loaded * 100) / evt.total) + "%"
-    //   );
-    // })
-    // .promise();
+    const response = await fetch(API_PATH, {
+      method: "POST",
+      headers: {
+        "Content-Type":"application/json",
+      },
+      body: JSON.stringify(dynamoDbData),
+    });
 
-    // await upload.then((err, data) => {
-    //   console.log(err);
-    //   // File successfully uploaded
-    //   alert("File uploaded successfully.");
-    // });
-    
-    // insert into dynamo via lambda
-    // const API_PATH='https://ckaxti9hn8.execute-api.us-west-1.amazonaws.com'
-    // const dynamoDbData = {
-    //   id: nanoid(),
-    //   input_text: inputText,
-    //   input_file_path: `${S3_BUCKET}/${file.name}`,
-    // };
+    if (!response.ok) {
+      throw new Error("Failed to save data to DynamoDB");
 
-    // const response = await fetch(API_PATH, {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type":"application/json",
-    //   },
-    //   body: JSON.stringify(dynamoDbData),
-    // });
-
-    // if (!response.ok) {
-    //   throw new Error("Failed to save data to DynamoDB");
-    // }
-    // alert("File uploaded and data saved successfully!");
+    }
+    alert("File uploaded and data saved successfully!");
     
   };
   
