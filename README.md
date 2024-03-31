@@ -1,70 +1,112 @@
-# Getting Started with Create React App
+###SETUP:
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Install Node version manager(nvm) from nvm-github
 
-## Available Scripts
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
 
-In the project directory, you can run:
+Install required node version
 
-### `npm start`
+nvm install 20 --lts -- This installs npm, npx
+Install node packages
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+npm install aws-sdk-js-v3 - did not work for me, so I tried below command
+ 
+$npm install @aws-sdk/client-s3   
+$npm install @aws-sdk/core    
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
 
-### `npm test`
+cd myapp and npm install
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Install aws cli
 
-### `npm run build`
+  curl "https://awscli.amazonaws.com/AWSCLIV2.pkg" -o "AWSCLIV2.pkg"
+  sudo installer -pkg AWSCLIV2.pkg -target /
+Reference: https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+###Configure aws cli by running:
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+$aws configure 
+    and add accessKey and secretAccessKey
+    Create an aws user
 
-### `npm run eject`
+###AWS:
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+You need to create your aws account and login into it:
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+    Create the following services:
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+        s3 bucket:
+           1. name : 'input-form', region :"us-west-1"
+            block: on
+            policy : see s3_ploicy.txt file in extra_files folder.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+            follow the default steps
 
-## Learn More
+            2. create one more bucket:
+                name: fovus-assignment
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+                upload ec2_script.py from extra_files folder into this separate bucket.
+        IAM:
+            goto IAM service and create 
+        
+        Lambda:
+            create two lambda functions:
+                1.fovus-lambda : to put_item into ddb (copy from put_lambda.py from extra_files folder attached).
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+                2. fovus-dynamodb-trigger : copy the file from ddb_trigger_lambda.py
 
-### Code Splitting
+        
+        API Gateway:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+            1.create API -> REST API -> New API , give a name
+            2.Create Method -> 'POST' as method type -> Lambda Function -> choose the lambda function created above (fovus-lambda).
+            3. **Enbale CORS.
 
-### Analyzing the Bundle Size
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
 
-### Making a Progressive Web App
+        dynamoDB:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+            1.create a table with name: 'fovus'. partition key : 'id'
+            2.click on the table and from 'exports and streams' section
+                goto streams and turn it on.
 
-### Advanced Configuration
+            3.Below it is the trigger -> create a trigger
+             and then choose : fovus-dynamodb-trigger lambda function -> create trigger.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
 
-### Deployment
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
 
-### `npm run build` fails to minify
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+###Run the npm app:
+
+cd myapp && replace App.js with my App.js present in email/git.
+
+
+
+
+##AWS creds:
+
+#for some reason process.env was not fetching credentials from my 
+./aws/credentials folder.
+So, I created the .env myself.
+
+1. create a .env file in the folder where package.json is present.
+2. copy the accesskey,secret_access_key into the .env
+    
+
+
+
+
+##Trigger and EC2 instance:
+
+turn on streams - from exports and streams in dynamo table - fovus
+create a trigger:
+    1.copy paste the trigger.py
+    2.create an ec2 instance
+    3.run the scrpit - by passing user_data
+        the script is present in a s3 bucket - fovus-assignment (you need to create a separate bucket and store the output.py file in it)
+    4.
+
+    
