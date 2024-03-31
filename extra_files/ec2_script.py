@@ -38,7 +38,7 @@ def process_file(file_id):
         print(f"Error uploading output file to S3: {e}")
         return
     
-    table = dynamodb.Table('data-table')
+    table = dynamodb.Table('fovus')
     try:
         full_output__path=bucket_name+"/"+output_file_path
         table.update_item(

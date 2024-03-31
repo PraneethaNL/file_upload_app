@@ -74,6 +74,9 @@ You need to create your aws account and login into it:
             3.Below it is the trigger -> create a trigger
              and then choose : fovus-dynamodb-trigger lambda function -> create trigger.
 
+            edit the trigger criteria:
+            {event[]}
+
 
 
 
