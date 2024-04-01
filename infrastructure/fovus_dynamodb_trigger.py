@@ -2,6 +2,8 @@ import json
 import boto3
 import time
 
+#trigger for whenever there is an 'INSERT' event into ddb
+
 def lambda_handler(event, context):
     print("event: ", event)
     id=event['Records'][0]['dynamodb']['Keys']['id']['S']
@@ -20,6 +22,9 @@ def lambda_handler(event, context):
     aws ec2 terminate-instances --instance-ids $INSTANCE_ID --region "us-west-1" 
     """
     print("started executing script")
+
+    #EC2 instance creation
+    
     response = ec2_client.run_instances(
         ImageId='ami-0b1eeafca2033f846',
         InstanceType='t2.micro',

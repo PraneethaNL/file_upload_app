@@ -1,6 +1,9 @@
 import boto3
 import sys
 
+#Script to be run on EC2 instance to retrive file from s3 and append the content
+#of input_file and input_text into a new file and upload it to ddb and s3 bucket.
+
 def process_file(file_id):
     # Retrieve input file from S3
     dynamodb = boto3.resource('dynamodb',region_name='us-west-1')
@@ -31,6 +34,8 @@ def process_file(file_id):
         return
     
     output_content = f"{input_file_content} {input_text}"
+
+    #insert appended file to s3 bucket
     
     try:
         s3.put_object(Bucket=bucket_name, Key=output_file_path, Body=output_content)
@@ -39,6 +44,8 @@ def process_file(file_id):
         return
     
     table = dynamodb.Table('fovus')
+
+    #update the existing entry in ddb - to add output_file path
     try:
         full_output__path=bucket_name+"/"+output_file_path
         table.update_item(
