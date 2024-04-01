@@ -30,9 +30,6 @@ const handleFileChange = (e) => {
     // S3 Region
     const REGION = "us-west-1";
 
-    //gateway end point to access lambda
-    
-      // todo:: Remove this hard code
       const CREDENTIALS = {
         accessKeyId: process.env.REACT_APP_AWS_ACCESS_KEY_ID,
         secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY
@@ -63,6 +60,7 @@ const handleFileChange = (e) => {
       }
 
     //insert into dynamo via lambda
+    
     const API_PATH='https://3amtuwjax4.execute-api.us-west-1.amazonaws.com/default'
     const dynamoDbData = {
       id: nanoid(),

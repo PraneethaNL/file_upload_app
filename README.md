@@ -66,9 +66,13 @@
         
     *   API Gateway:
 
-            1.create API -> REST API -> New API , give a name eg: fovus-rest-post
+            1.Create API -> REST API -> New API , give a name eg: fovus-rest-post
             2.Create Method -> 'POST' as method type -> Lambda Function -> choose the lambda function created above (fovus-lambda).
             IMP NOTE: Enbale CORS.
+            3. Click on deployAPI and choose a stage name.
+            4. goto stages from the left side panel and copy the invoke URL.
+
+            NOTE: This will be the API_PATH for the gateway (present in App.js).
 
 
 
